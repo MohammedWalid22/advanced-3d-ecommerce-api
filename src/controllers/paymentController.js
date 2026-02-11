@@ -5,13 +5,13 @@ import dotenv from 'dotenv'
 dotenv.config()
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-// 1. إنشاء نية الدفع (النسخة الآمنة)
+
 export const createPaymentIntent = async (req, res) => {
   try {
-    // 🛡️ التغيير: بناخد رقم الطلب بدلاً من المبلغ
+    
     const { orderId } = req.body
     
-    // لازم يكون المستخدم مسجل دخول
+    
     if (!req.user) {
         return res.status(401).json({ message: 'User not authenticated' })
     }
@@ -22,12 +22,12 @@ export const createPaymentIntent = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' })
     }
 
-    // 🛡️ أمان 1: هل الطلب ده بتاع المستخدم اللي بيحاول يدفع؟
+   
     if (order.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Unauthorized: You can only pay for your own orders' })
     }
 
-    // 🛡️ أمان 2: هل الطلب مدفوع أصلاً؟
+    
     if (order.status === 'completed') {
       return res.status(400).json({ message: 'Order is already paid' })
     }
@@ -50,7 +50,7 @@ export const createPaymentIntent = async (req, res) => {
   }
 }
 
-// 2. تأكيد الدفع
+
 export const confirmPayment = async (req, res) => {
   try {
     const { paymentIntentId, orderId } = req.body
