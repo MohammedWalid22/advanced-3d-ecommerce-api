@@ -1,40 +1,40 @@
-import Product from '../models/Product.js'; // 1. لازم نستورد الموديل عشان نقرأ المخزون
+import Product from '../models/Product.js'; 
 
 export const getCart = (req, res) => {
   const cart = req.cookies.cart ? JSON.parse(req.cookies.cart) : [];
   res.json(cart);
 }
 
-// 2. حولنا الدالة لـ async عشان نقدر نكلم الداتابيز
+
 export const addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
     
-    // هات تفاصيل المنتج من الداتابيز عشان نعرف المخزون كام
+    
     const product = await Product.findById(productId);
 
     if (!product) {
       return res.status(404).json({ message: "المنتج غير موجود" });
     }
 
-    // هات السلة الحالية
+   
     let cart = req.cookies.cart ? JSON.parse(req.cookies.cart) : [];
     
-    // شوف هل المنتج موجود قبل كدة في السلة؟
+   
     const existingItem = cart.find(i => i.productId === productId);
     
-    // احسب الكمية الإجمالية اللي العميل عايزها (الجديد + القديم اللي في السلة)
+   
     const currentQtyInCart = existingItem ? existingItem.quantity : 0;
     const totalRequested = currentQtyInCart + Number(quantity);
 
-    // 🛑 اللحظة الحاسمة: مقارنة المطلوب بالمتاح
+   
     if (totalRequested > product.stock) {
       return res.status(400).json({ 
         message: `عفواً، الكمية غير متاحة. المتاح: ${product.stock}، وأنت لديك في السلة: ${currentQtyInCart}` 
       });
     }
 
-    // ✅ لو كله تمام، كمل عادي
+    
     if (existingItem) {
       existingItem.quantity += Number(quantity);
     } else {
