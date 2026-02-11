@@ -64,14 +64,13 @@ export const getMyOrders = async (req, res) => {
   }
 }
 
-// 👇 دي الدالة الجديدة المهمة جداً
+
 export const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate('user', 'name email')
 
     if (order) {
-      // 🛡️ التحقق: هل أنت صاحب الطلب؟ أو هل أنت أدمن؟
-      // (لاحظ: بنستخدم role === 'admin' عشان تمشي مع ملف admin.js بتاعك)
+      
       if (order.user._id.toString() === req.user._id.toString() || req.user.role === 'admin') {
         res.json(order)
       } else {
