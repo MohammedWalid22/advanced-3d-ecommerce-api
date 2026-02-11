@@ -17,21 +17,17 @@ import paymentRoutes from './routes/payments.js'
 
 export const app = express()
 
-// 1. إعدادات الأمان (Helmet) - حماية الـ Headers
 app.use(helmet())
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
-app.use(express.json({ limit: '10kb' })) // 🆕 منع إرسال بيانات ضخمة تهنج السيرفر
+app.use(express.json({ limit: '10kb' })) 
 app.use(cookieParser())
+app.use(mongoSanitize()) 
+app.use(xss()) 
 
-// 2. تنظيف البيانات (Sanitization)
-app.use(mongoSanitize()) // منع حقن NoSQL Injection
-app.use(xss()) // منع أكواد HTML/JS الخبيثة
-
-// 3. تحديد عدد الطلبات (Rate Limiting)
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 دقيقة
-  max: 100, // 100 طلب لكل IP
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
   message: 'Too many requests from this IP, please try again later.'
 })
 app.use('/api', limiter)
@@ -47,11 +43,10 @@ app.use('/api/cart', cartRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/payment', paymentRoutes)
 
-// معالجة الأخطاء (بدون كشف تفاصيل السيرفر في الـ Production)
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode
   res.status(statusCode).json({
     message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack // 🆕 إخفاء المسارات
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack
   })
 })
