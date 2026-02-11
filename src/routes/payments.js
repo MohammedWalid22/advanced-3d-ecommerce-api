@@ -4,10 +4,10 @@ import { protect } from '../middlewares/auth.js'
 
 const router = express.Router()
 
-router.use(protect) // حماية: لازم تسجيل دخول
+router.use(protect) 
 
-router.post('/create-intent', createPaymentIntent) // إنشاء عملية دفع
-router.post('/confirm', confirmPayment)            // تأكيد العملية وتحديث الطلب
-router.get('/stripeapi', sendStripeApiKey)         // إرسال المفتاح للفرونت
+router.post('/create-intent', createPaymentIntent) 
+router.post('/confirm', confirmPayment)            
+router.get('/stripeapi', sendStripeApiKey)         
 
 export default router
