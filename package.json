@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "preinstall": "npm install --legacy-peer-deps",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js"
   },
